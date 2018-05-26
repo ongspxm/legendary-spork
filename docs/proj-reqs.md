@@ -1,5 +1,6 @@
-Queries
+## queries
 - [ ] one host or multiple placing
+- [ ] white-listing / black-listing of time period
 
 ## user stories
 ### administrative
@@ -9,17 +10,22 @@ Queries
 - alter information of users
 
 ### users (searching for vacancies)
-- searching and sorting of vacancies
-- view monastry info
-- leave a message for monastry
+- searching: search by text
+- filtering: traditions allowed
+- filtering: monks / nuns
+- filtering: duration of stay
+- filtering: blocked periods of time
+- view monastry info (picture and details)
+- leave a message for monastry (email forwarded to them)
 
 ### monastry (providing vacancies)
+- able to login to alter data from email
 - map location (embed)
 - name, duration, num of rooms
-- traditions of monks
+- traditions of monks + gender
+- black-listing of period of stay
 - add new places & alter information
 - upload images of the place
-- able to login to alter data from email
 
 ### adminstrative authentication
 - special fb accts given access
@@ -35,3 +41,4 @@ Queries
 - jwt auth for sessions (logmein)
 - REST api backend, authenticated
 - image hosting on imgur
+- email handling by mailgun (require domain)
