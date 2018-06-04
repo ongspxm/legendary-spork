@@ -1,0 +1,26 @@
+{
+  "name": "spork",
+  "version": "1.0.0",
+  "description": "sangha bnb",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ongspxm/legendary-spork.git"
+  },
+  "author": "ongspxm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ongspxm/legendary-spork/issues"
+  },
+  "homepage": "https://github.com/ongspxm/legendary-spork#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "jest": "^23.1.0"
+  }
+}
