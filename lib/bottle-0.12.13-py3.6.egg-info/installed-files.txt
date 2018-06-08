@@ -1,7 +1,0 @@
-../bottle.py
-../__pycache__/bottle.cpython-36.pyc
-SOURCES.txt
-dependency_links.txt
-PKG-INFO
-top_level.txt
-../../../bin/bottle.py
