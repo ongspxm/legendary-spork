@@ -14,12 +14,12 @@ create table if not exists rooms(
     _id integer primary key,
     u_email text,
     name text,
-    weekRange integer, 
-    numAvailable integer,
+    weekRange integer,
+    numAvailable integer
 );
 
 create table if not exists admins(
-    auth0 text;
+    auth0 text
 );
 
 create table if not exists images(
@@ -27,3 +27,21 @@ create table if not exists images(
     r_id text,
     dhash text
 );
+
+create table if not exists vals(
+    key text unique,
+    val text
+);
+insert or replace into vals(key, val) values("email_verification", "
+code: %s
+
+use this code within the hour, if not the code will expire and you will have
+to request a new one.
+
+do not give this code to anyone else, we will never ask for it. if you didn't
+request this, it is safe to ignore this email.
+
+also, one time use only, if you key in a wrong code, please generate a new
+one.
+    
+---");

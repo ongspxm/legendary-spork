@@ -10,9 +10,9 @@ def select(table, where, vals):
     conn = getConn()
     db = conn.cursor()
 
-    db.excute("select * from %s %s"%(table, where), vals)
+    db.execute("select * from %s %s"%(table, where), vals)
     res = db.fetchall()
-    fld = db.description()[0]
+    fld = db.description
     conn.close()
 
     out = []
@@ -20,7 +20,7 @@ def select(table, where, vals):
         row, cnt = {}, len(val) 
         
         for i in range(cnt):
-            row[flds[i]] = val[i]
+            row[fld[i][0]] = val[i]
         out.append(row)
 
     return out
@@ -40,7 +40,7 @@ def insert(table, obj):
             ",".join(fstr), 
             ",".join(["?"]*len(vals)))
 
-    db.execute(qry)
+    db.execute(qry, vals)
     conn.commit()
     conn.close()
     return True
@@ -55,7 +55,7 @@ def delete(table, where):
     conn.close()
     return True
 
-def update(table, obj, where, wvals):
+def update(table, where, wvals, obj):
     conn = getConn()
     db = conn.cursor()
 
@@ -72,3 +72,4 @@ def update(table, obj, where, wvals):
     db.execute(qry, vals+wvals)
     conn.commit()
     conn.close()
+    return True

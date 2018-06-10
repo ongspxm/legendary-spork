@@ -11,7 +11,7 @@ def getHash(stuff):
     return hashlib.sha256(stuff).hexdigest()
 
 ### return token, based roughly on JWT
-def getTkn(obj):
+def genTkn(obj):
     pload = json.dumps(obj)
     shash = getHash(pload+KEY)
     return "%s.%s"%(b64.b64encode(pload), shash)

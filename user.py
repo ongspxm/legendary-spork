@@ -1,6 +1,17 @@
+import re
 import time
-import dbase
 from util import *
+
+import dbase
+from mailgun import sendmail
+
+### (email) => True/False
+def isValidEmail(email):
+    print email
+    if email and len(email) > 7:
+        if re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+            return True
+    return False
 
 ### (email) => ({email, code})
 def getUser(email):
@@ -11,11 +22,10 @@ def getUser(email):
 def isUserExist(email):
     return getUser(email) is not None
 
-### ({email, name}) => True
+### ({email, name}) => True/False
 def newUser(usr): 
-    # TODO: check valid email
     email = usr.get("email")
-    if not email:
+    if not isValidEmail(email):
         raise MalformedException
     if isUserExist(email): 
         raise UserExistException
@@ -27,7 +37,7 @@ def newUser(usr):
     }) 
 
 ### ({email, name}) => True
-def cngName(usr):
+def chgName(usr):
     email = usr.get("email")
     if not isUserExist(email): raise UserNotExistException
     
@@ -49,7 +59,11 @@ def genCode(usr):
 
     if not res: raise DatabaseException
 
-    # TODO: send mail
+    sendmail({
+        "to": email,
+        "subj": "logging in",
+        "text": getTemplate("email_verification")%(part1+"-"+part2)
+    })
     return part1
 
 ### ({email, code}) => True

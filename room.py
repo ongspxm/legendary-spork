@@ -16,18 +16,7 @@ def newRoom(obj):
         "weekRange":aval
     })
 
-### ({user, rmId}) => True/False
-def delRoom(obj):
-    user = obj.get("user")
-    rmId = obj.get("rmId")
-    if not user or not rmId:
-        raise MalformedException
-
-    return dbase.delete(
-            "rooms", "where u_email=? and _id=?", 
-            [user["email"], rmId])
-
-### ({rmId, name, vacancy, available})
+### ({rmId, name, vacancy, available}) => True/False
 def updateRoom(obj):
     rmId = obj.get("rmId")
     name = obj.get("name")
@@ -43,6 +32,18 @@ def updateRoom(obj):
     return dbase.update(
             "rooms", "where _id=?",
             [rmId], res)
+
+### ({user, rmId}) => True/False
+def delRoom(obj):
+    user = obj.get("user")
+    rmId = obj.get("rmId")
+    if not user or not rmId:
+        raise MalformedException
+
+    return dbase.delete(
+            "rooms", "where u_email=? and _id=?", 
+            [user["email"], rmId])
+
 
 ### ({rmId, picData})
 def addImg(): pass
