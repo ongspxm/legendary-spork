@@ -4,6 +4,7 @@ from util import *
 
 import tkn
 import user
+import imgur
 
 ### bottle wrappers & util funcs
 def handleError(callback):
@@ -42,9 +43,12 @@ def user_logIn():
 @bottle.get("/tkn")
 def user_verify():
     email = getReq("email")
+    code = getReq("code")
+    if not email or not code: raise MalformedException
+
     valid = user.vrfCode({
         "email": email,
-        "code": getReq("code")
+        "code": code 
     })
     
     if not valid: raise UnauthorizedException  
@@ -55,12 +59,11 @@ def user_verify():
 
 @bottle.get("/user/name")
 def user_updateName():
-    # verify jwt
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
-
     name = getReq("name")
     if not name: raise MalformedException
+
+    usr = verifyUser()
+    if not usr: raise UnauthorizedException
     
     return user.chgName({
         "email": usr.get("email"),

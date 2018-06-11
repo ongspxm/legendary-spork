@@ -55,6 +55,7 @@ def delete(table, where):
     conn.close()
     return True
 
+### return True
 def update(table, where, wvals, obj):
     conn = getConn()
     db = conn.cursor()
