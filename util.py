@@ -8,6 +8,10 @@ UserExistException = Exception("User already exist")
 UserNotExistException = Exception("User doesnt exist")
 UnauthorizedException = Exception("Unauthorized action")
 
+ImgurException = Exception("Imgur upload failed")
+RoomNotExistException = Exception("Room doesnt exist")
+ImageNotExistException = Exception("Image doesnt exist")
+
 def getTemplate(key):
     return dbase.select("vals", "where key=?", [key])[0].get("val");
 

@@ -24,6 +24,7 @@ create table if not exists admins(
 
 create table if not exists images(
     imgur text unique,
+    link text,
     r_id text,
     dhash text
 );

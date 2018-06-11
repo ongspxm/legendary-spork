@@ -1,7 +1,15 @@
 import dbase
+import imgur
 from util import *
 
-### ({user, name, vacancy, availability}) => True/False
+### (rmId) => {_id, u_id, name, ..} 
+def getRoom(rmId):
+    res = dbase.select("rooms", "where _id=?", [rmId])
+    if not len(res): raise RoomNotExistException 
+    return res[0]
+
+
+### ({user, name, vacancy, availability}) => True
 def newRoom(obj):
     user = obj.get("user")
     name = obj.get("name", "<hosting name>")
@@ -16,7 +24,7 @@ def newRoom(obj):
         "weekRange":aval
     })
 
-### ({rmId, name, vacancy, available}) => True/False
+### ({rmId, name, vacancy, available}) => True
 def updateRoom(obj):
     rmId = obj.get("rmId")
     name = obj.get("name")
@@ -33,7 +41,7 @@ def updateRoom(obj):
             "rooms", "where _id=?",
             [rmId], res)
 
-### ({user, rmId}) => True/False
+### ({user, rmId}) => True
 def delRoom(obj):
     user = obj.get("user")
     rmId = obj.get("rmId")
@@ -45,8 +53,28 @@ def delRoom(obj):
             [user["email"], rmId])
 
 
-### ({rmId, picData})
-def addImg(): pass
+### ({rmId, picData}) => {imgur, link, r_id, dhash} 
+def addImg(obj):
+    rmId = obj.get("rmId")
+    data = obj.get("picDate")
+    if not rmId or not getRoom(rmId) or not data:
+        raise MalformedException
 
-### ({rmId, imgurId})
-def delImg(): pass
+    img = imgur.uploadImg(data)
+    img["r_id"] = rmId
+
+    dbase.insert("images", img)
+    return img
+
+### ({rmId, imgurId}) => True
+def delImg():
+    rmId = obj.get("rmId")
+    imgur = obj.get("imgurId")
+    if not rmId or not getRoom(rmId) or not imgur:
+        raise MalformedException
+
+    img = dbase.select("images", "where _id=? and r_id=?", [imgur, rmId])
+    if not len(img): raise ImageNotExistException
+    img = img[0]
+
+    return imgur.deleteImg(img["dhash"]) 

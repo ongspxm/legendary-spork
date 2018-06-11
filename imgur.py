@@ -6,13 +6,13 @@ import dbase
 from util import *
 
 API_EP = "https://api.imgur.com/3"
-API_ID = os.environ["IMGUR_API"]
+API_HD = {"Authorization": "Client-ID "+os.environ["IMGUR_API"]}
 
 ### (data) => ({imgur, link, dhash})
 def uploadImg(data):
     req = json.loads(requests.post(
-        API_EP+"/image", 
-        headers={ "Authorization": "Client-ID "+API_ID },
+        headers=API_HD,
+        API_EP+"/image",
         data={ "image":data }
     ).text)
 
@@ -24,4 +24,15 @@ def uploadImg(data):
         "imgur": data.get("id"),
         "link": data.get("link"),
         "dhash": data.get("deletehash")
-    } 
+    }
+
+### (dhash) => True
+def deleteImg(dhash):
+    req = json.loads(request.delete(
+        headers=API_HD,
+        API_EP+"/image/"+dhash
+    ).text)
+
+    if not req.get("success"):
+        raise ImgurException 
+    return True
