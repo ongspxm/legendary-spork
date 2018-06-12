@@ -19,7 +19,7 @@ create table if not exists rooms(
 );
 
 create table if not exists admins(
-    auth0 text
+    email text unique
 );
 
 create table if not exists images(
