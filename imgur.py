@@ -11,8 +11,8 @@ API_HD = {"Authorization": "Client-ID "+os.environ["IMGUR_API"]}
 ### (data) => ({imgur, link, dhash})
 def uploadImg(data):
     req = json.loads(requests.post(
-        headers=API_HD,
         API_EP+"/image",
+        headers=API_HD,
         data={ "image":data }
     ).text)
 
@@ -28,11 +28,12 @@ def uploadImg(data):
 
 ### (dhash) => True
 def deleteImg(dhash):
-    req = json.loads(request.delete(
-        headers=API_HD,
-        API_EP+"/image/"+dhash
+    req = json.loads(requests.delete(
+        API_EP+"/image/"+dhash,
+        headers=API_HD
     ).text)
 
     if not req.get("success"):
-        raise ImgurException 
-    return True
+        raise ImgurException
+
+    return dbase.delete("images", "where dhash=?", [dhash])

@@ -72,13 +72,17 @@ def vrfCode(usr):
     user = getUser(email)
     if user is None: raise UserNotExistException
 
+    diff = int(time.time()) - user.get("tstamp", 0)
+    if diff>TIMEOUT_USER_VERIFICATION:
+        raise UnauthorizedException
+
     code = usr.get("code")
     check = user.get("code")
     if not code or not check: 
         raise MalformedException
 
     if not dbase.update("users", "where email=?", 
-            [email], { "code": "" }):
+            [email], { "code": "", "tstamp":0 }):
         raise DatabaseException
     
     return code==check

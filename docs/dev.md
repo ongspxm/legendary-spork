@@ -22,7 +22,7 @@ token payload includes user email and their admin status.
 expiration of token is also defined here where an expired token will result in a invalid read from the token.
 
 ### util.py
-Consist of miscellenous functions and application or library based exceptions, used to consolidate all these one place for consistency.
+Consist of miscellenous functions and application or library based exceptions, used to consolidate all these one place for consistency. additional timeout for different use case included as well.
 
 ### dbase.py
 wrapper for sqlite to perform basic database function, select, insert, delete and update.

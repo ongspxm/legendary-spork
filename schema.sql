@@ -33,6 +33,7 @@ create table if not exists vals(
     key text unique,
     val text
 );
+
 insert or replace into vals(key, val) values("email_verification", "
 code: %s
 
@@ -44,5 +45,8 @@ request this, it is safe to ignore this email.
 
 also, one time use only, if you key in a wrong code, please generate a new
 one.
-    
+
 ---");
+
+insert or ignore into users(email) values("ongspxm@gmail.com");
+insert or ignore into admins(email) values("ongspxm@gmail.com");

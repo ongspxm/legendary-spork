@@ -2,19 +2,19 @@ import dbase
 import imgur
 from util import *
 
-### (rmId) => {_id, u_id, name, ..} 
+### (rmId) => {_id, u_id, name, ..}
 def getRoom(rmId):
     res = dbase.select("rooms", "where _id=?", [rmId])
-    if not len(res): raise RoomNotExistException 
+    if not len(res): raise RoomNotExistException
     return res[0]
 
 
-### ({user, name, vacancy, availability}) => True
+### ({user, name, vacy, aval}) => True
 def newRoom(obj):
     user = obj.get("user")
     name = obj.get("name", "<hosting name>")
-    vacy = obj.get("vacancy", 0)
-    aval = obj.get("availablity", 52)
+    vacy = obj.get("vacy", 0)
+    aval = obj.get("aval", 52)
     if not user: raise MalformedException
 
     return dbase.insert("rooms", {
@@ -28,8 +28,8 @@ def newRoom(obj):
 def updateRoom(obj):
     rmId = obj.get("rmId")
     name = obj.get("name")
-    vacy = obj.get("vacancy")
-    aval = obj.get("availablity")
+    vacy = obj.get("vacy")
+    aval = obj.get("aval")
     if not rmId: raise MalformedException
 
     res = {}
@@ -49,14 +49,14 @@ def delRoom(obj):
         raise MalformedException
 
     return dbase.delete(
-            "rooms", "where u_email=? and _id=?", 
+            "rooms", "where u_email=? and _id=?",
             [user["email"], rmId])
 
 
-### ({rmId, picData}) => {imgur, link, r_id, dhash} 
+### ({rmId, picData}) => {imgur, link, r_id, dhash}
 def addImg(obj):
     rmId = obj.get("rmId")
-    data = obj.get("picDate")
+    data = obj.get("picData")
     if not rmId or not getRoom(rmId) or not data:
         raise MalformedException
 
@@ -67,14 +67,14 @@ def addImg(obj):
     return img
 
 ### ({rmId, imgurId}) => True
-def delImg():
+def delImg(obj):
     rmId = obj.get("rmId")
-    imgur = obj.get("imgurId")
+    imgId = obj.get("imgurId")
     if not rmId or not getRoom(rmId) or not imgur:
         raise MalformedException
 
-    img = dbase.select("images", "where _id=? and r_id=?", [imgur, rmId])
+    img = dbase.select("images", "where imgur=? and r_id=?", [imgId, rmId])
     if not len(img): raise ImageNotExistException
     img = img[0]
 
-    return imgur.deleteImg(img["dhash"]) 
+    return imgur.deleteImg(img["dhash"])

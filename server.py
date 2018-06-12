@@ -4,7 +4,7 @@ from util import *
 
 import tkn
 import user
-import imgur
+import room
 
 ### bottle wrappers & util funcs
 def handleError(callback):
@@ -14,8 +14,8 @@ def handleError(callback):
             return "ok" if body is True else body
         except Exception as e:
             bottle.response.status = 404
-            return e 
-            
+            return e
+
     return wrapper
 bottle.install(handleError)
 
@@ -27,20 +27,15 @@ def verifyUser():
     expired = 1000*60*60*3
 
     usr = tkn.extTkn(bottle.request.headers.get("Authorization"))
-    if not usr: return False
-    
-    issat = usr.get("issat")
-    if issat and int(time.time())-issat>expired: return False
-
     return usr
 
-@bottle.get("/login")
+@bottle.route("/login", method=["OPTIONS", "GET"])
 def user_logIn():
     return user.genCode({
         "email": getReq("email")
     })
 
-@bottle.get("/tkn")
+@bottle.route("/tkn", method=["OPTIONS", "GET"])
 def user_verify():
     email = getReq("email")
     code = getReq("code")
@@ -48,29 +43,104 @@ def user_verify():
 
     valid = user.vrfCode({
         "email": email,
-        "code": code 
-    })
-    
-    if not valid: raise UnauthorizedException  
-    return tkn.genTkn({
-        "email": email,
-        "issat": int(time.time())
+        "code": code
     })
 
-@bottle.get("/user/name")
+    if not valid: raise UnauthorizedException
+    return tkn.genTkn(email)
+
+@bottle.route("/user/name", method=["OPTIONS", "GET"])
 def user_updateName():
     name = getReq("name")
     if not name: raise MalformedException
 
     usr = verifyUser()
     if not usr: raise UnauthorizedException
-    
+
     return user.chgName({
         "email": usr.get("email"),
-        "name": name 
+        "name": name
     })
 
-@bottle.get("/admin/newUser")
+@bottle.route("/room/new", method=["OPTIONS", "GET"])
+def room_new():
+    usr = verifyUser()
+    if not usr: raise UnauthorizedException
+
+    name = getReq("name")
+    vacy = getReq("vacancy")
+    aval = getReq("weekRange")
+
+    return room.newRoom({
+        "user": usr,
+        "name": name,
+        "vacy": vacy,
+        "aval": aval
+    })
+
+@bottle.route("/room/edit", method=["OPTIONS", "GET"])
+def room_edit():
+    usr = verifyUser()
+    if not usr: raise UnauthorizedException
+
+    rmId = getReq("rm")
+    name = getReq("name")
+    vacy = getReq("vacancy")
+    aval = getReq("weekRange")
+    if not rmId: raise MalformedException
+
+    qry = "where _id=? and u_email=?"
+    res = dbase.select("rooms", qry, [rmId, usr["email"]])
+    if len(res)==0: raise UnauthorizedException
+
+    return room.updateRoom({
+        "rmId": rmId,
+        "name": name,
+        "vacy": vacy,
+        "aval": aval
+    })
+
+@bottle.route("/room/newImg", method=["OPTIONS", "POST"])
+def room_newImg():
+    usr = verifyUser()
+    if not usr: raise UnauthorizedException
+
+    rmId = getReq("rm")
+    data = bottle.request.files.get("img").file.read()
+    if not rmId or not data:
+        raise MalformedException
+
+    qry = "where _id=? and u_email=?"
+    res = dbase.select("rooms", qry, [rmId, usr["email"]])
+    if len(res)==0: raise UnauthorizedException
+
+    res = room.addImg({
+        "rmId": rmId,
+        "picData": data
+    })
+    return "%s %s"%(res["link"], res["imgur"])
+
+@bottle.route("/room/delImg", method=["OPTIONS", "GET"])
+def room_delImg():
+    usr = verifyUser()
+    if not usr: raise UnauthorizedException
+
+    rmId = getReq("rm")
+    imgId = getReq("imgId")
+    if not rmId or not imgId:
+        raise MalformedException
+
+    qry = "where _id=? and u_email=?"
+    res = dbase.select("rooms", qry, [rmId, usr["email"]])
+    if len(res)==0: raise UnauthorizedException
+
+    return room.delImg({
+        "rmId": rmId,
+        "imgurId": imgId
+    })
+
+
+@bottle.route("/admin/newUser", method=["OPTIONS", "GET"])
 def admin_newUser():
     # TODO: jwt checking
     name = getReq("name")

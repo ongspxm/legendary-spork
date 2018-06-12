@@ -17,8 +17,8 @@ def select(table, where, vals):
 
     out = []
     for val in res:
-        row, cnt = {}, len(val) 
-        
+        row, cnt = {}, len(val)
+
         for i in range(cnt):
             row[fld[i][0]] = val[i]
         out.append(row)
@@ -36,8 +36,8 @@ def insert(table, obj):
         vals.append(obj.get(key, ""))
 
     qry = "insert into %s(%s) values(%s)"%(
-            table, 
-            ",".join(fstr), 
+            table,
+            ",".join(fstr),
             ",".join(["?"]*len(vals)))
 
     db.execute(qry, vals)
@@ -46,11 +46,11 @@ def insert(table, obj):
     return True
 
 ### return True
-def delete(table, where): 
+def delete(table, where, vals):
     conn = getConn()
     db = conn.cursor()
-    
-    db.excute("delete from %s %s", table, where)
+
+    db.execute("delete from %s %s"%(table, where), vals)
     conn.commit()
     conn.close()
     return True

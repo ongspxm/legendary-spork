@@ -12,6 +12,10 @@ ImgurException = Exception("Imgur upload failed")
 RoomNotExistException = Exception("Room doesnt exist")
 ImageNotExistException = Exception("Image doesnt exist")
 
+TIMEOUT_HOUR = 1000*60*60
+TIMEOUT_USER_VERIFICATION = TIMEOUT_HOUR
+TIMEOUT_TOKEN_EXPIRY = TIMEOUT_HOUR*8
+
 def getTemplate(key):
     return dbase.select("vals", "where key=?", [key])[0].get("val");
 
