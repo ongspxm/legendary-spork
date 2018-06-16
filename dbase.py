@@ -6,7 +6,7 @@ def getConn():
     return sqlite3.connect(DB);
 
 ### return [rows]
-def select(table, where, vals):
+def select(table, where="", vals=[]):
     conn = getConn()
     db = conn.cursor()
 

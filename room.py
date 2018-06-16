@@ -8,6 +8,32 @@ def getRoom(rmId):
     if not len(res): raise RoomNotExistException
     return res[0]
 
+### ({email, pager}) => [{rid, email, name, range, avail, imgs}]
+def getRooms(obj):
+    email = obj.get("email")
+    pager = obj.get("pager")
+    if not pager: pager = 0
+
+    qry = "where _id>?"
+    val = [pager]
+
+    if email:
+        qry += " and u_email=?"
+        val.append(email)
+
+    res = map(lambda rm: {
+        "rid": rm["_id"],
+        "name": rm["name"],
+        "email": rm["u_email"],
+        "range": rm["weekRange"],
+        "avail": rm["numAvailable"],
+        "imgs": map(
+            lambda img: img["link"],
+            dbase.select("images", "where r_id=?", [rm["_id"]])
+        )
+    }, dbase.select("rooms", qry, val))
+
+    return res
 
 ### ({user, name, vacy, aval}) => True
 def newRoom(obj):

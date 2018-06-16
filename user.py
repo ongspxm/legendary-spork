@@ -18,33 +18,42 @@ def getUser(email):
     res = dbase.select("users", "where email=?", [email])
     return res[0] if res else None
 
+### () => [{email, name}]
+def getUsers():
+    return dbase.select("users")
+
+### (email) => True/False
+def isAdmin(email):
+    res = dbase.select("admins", "where email=?", [email])
+    return len(res)==1
+
 ### (email) => True/False
 def isUserExist(email):
     return getUser(email) is not None
 
 ### ({email, name}) => True/False
-def newUser(usr): 
+def newUser(usr):
     email = usr.get("email")
     if not isValidEmail(email):
         raise MalformedException
-    if isUserExist(email): 
+    if isUserExist(email):
         raise UserExistException
-    
+
     name = usr.get("name", email)
     return dbase.insert("users", {
         "email": email,
         "name": name
-    }) 
+    })
 
 ### ({email, name}) => True
 def chgName(usr):
     email = usr.get("email")
     if not isUserExist(email): raise UserNotExistException
-    
+
     name = usr.get("name", email)
     return dbase.update("users", "where email=?", [email], {
         "name": name
-    }) 
+    })
 
 ### ({email}) => code1
 def genCode(usr):
@@ -54,7 +63,7 @@ def genCode(usr):
     part1, part2 = randCode(), randCode()
     res = dbase.update("users", "where email=?", [email], {
         "code": part1+"-"+part2,
-        "tstamp": int(time.time()) 
+        "tstamp": int(time.time())
     })
 
     if not res: raise DatabaseException
@@ -67,7 +76,7 @@ def genCode(usr):
     return part1
 
 ### ({email, code}) => True
-def vrfCode(usr): 
+def vrfCode(usr):
     email = usr.get("email")
     user = getUser(email)
     if user is None: raise UserNotExistException
@@ -78,11 +87,11 @@ def vrfCode(usr):
 
     code = usr.get("code")
     check = user.get("code")
-    if not code or not check: 
+    if not code or not check:
         raise MalformedException
 
-    if not dbase.update("users", "where email=?", 
+    if not dbase.update("users", "where email=?",
             [email], { "code": "", "tstamp":0 }):
         raise DatabaseException
-    
+
     return code==check

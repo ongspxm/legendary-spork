@@ -1,4 +1,4 @@
-import time
+import json
 import bottle
 from util import *
 
@@ -9,9 +9,16 @@ import room
 ### bottle wrappers & util funcs
 def handleError(callback):
     def wrapper(*args, **kwargs):
+        bottle.response.set_header("Access-Control-Allow-Origin", "*")
+        bottle.response.set_header("Access-Control-Allow-Methods", "*")
+        bottle.response.set_header("Server", "httpd 2.4.33")
+
         try:
             body = callback(*args, **kwargs)
-            return "ok" if body is True else body
+
+            if body is True:
+                return "ok"
+            return json.dumps(body)
         except Exception as e:
             bottle.response.status = 404
             return e
@@ -25,8 +32,10 @@ def getReq(key):
 def verifyUser():
     # expired in 3 hours
     expired = 1000*60*60*3
+    jwtTkn = bottle.request.headers.get("Authorization")
+    if not jwtTkn: return None
 
-    usr = tkn.extTkn(bottle.request.headers.get("Authorization"))
+    usr = tkn.extTkn(jwtTkn)
     return usr
 
 @bottle.route("/login", method=["OPTIONS", "GET"])
@@ -60,6 +69,16 @@ def user_updateName():
     return user.chgName({
         "email": usr.get("email"),
         "name": name
+    })
+
+@bottle.route("/rooms", methods=["OPTIONS", "GET"])
+def room_list():
+    email = getReq("email")
+    pager = getReq("pager")
+
+    return room.getRooms({
+        "email": email,
+        "pager": pager
     })
 
 @bottle.route("/room/new", method=["OPTIONS", "GET"])
@@ -139,13 +158,26 @@ def room_delImg():
         "imgurId": imgId
     })
 
-
 @bottle.route("/admin/newUser", method=["OPTIONS", "GET"])
 def admin_newUser():
-    # TODO: jwt checking
+    usr = verifyUser()
+    if not usr or not user.isAdmin(usr["email"]):
+        raise UnauthorizedException
+
     name = getReq("name")
     email = getReq("email")
 
     return user.newUser({"email":email, "name":name})
+
+@bottle.route("/admin/listUsers", method=["OPTIONS", "GET"])
+def admin_listUsers():
+    usr = verifyUser()
+    if not usr or not user.isAdmin(usr["email"]):
+        raise UnauthorizedException
+
+    return map(lambda usr: {
+        "name": usr["name"],
+        "email": usr["email"]
+    }, user.getUsers())
 
 bottle.run(host="0.0.0.0", port=8000)
