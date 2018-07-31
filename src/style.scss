@@ -1,0 +1,74 @@
+body{
+    margin:0;
+    padding:0;
+    font-family:sans-serif;
+}
+
+vuetemplate{
+    display:none;
+}
+
+.room{
+    margin-bottom:3rem;
+
+    &__row{
+        display:flex;
+        align-items:flex-end;
+    }
+
+    &__imgs{
+        flex:1 0;
+        overflow:hidden;
+        position:relative;
+        margin-bottom:1rem;
+
+        &__ctrls{
+            top:calc(50% - 1rem);
+            position:absolute;
+            z-index:100;
+
+            font-size:2rem;
+            cursor:pointer;
+            width:calc(100% - 2rem);
+
+            display:flex;
+            padding:1rem;
+            justify-content:space-between;
+        }
+
+        &__content{
+            display:flex;
+            position:relative;
+            z-index:10;
+            transition:left 1s;
+        }
+
+        &__img{
+            flex:0 0 100%;
+            width:100%;
+            padding-bottom:75%;
+            background-size:cover;
+        }
+    }
+
+    &__info{
+        padding-left:1rem;
+
+        &--name{
+            font-size:1.5rem;
+            font-weight:bold;
+        }
+
+        &--duration{
+            margin-bottom:0.5rem;
+        }
+
+        &--icons{
+            font-size:1.5rem;
+
+            i{
+                margin-right:1rem;
+            }
+        }
+    }
+}

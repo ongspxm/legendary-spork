@@ -1,0 +1,42 @@
+html
+  head
+    script(src="js/vue.min.js")
+
+    link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css")
+    link(rel="stylesheet", href="style.css")
+  body
+    #app
+      #rooms
+        v_room(
+          v-for='room in rooms', 
+          v-bind:room='room',
+          v-bind:key='room.id'
+        )
+
+    vuetemplate#v_room
+      .room
+        .room__row
+          .room__imgs
+            .room__imgs__ctrls
+              i.fas.fa-angle-left(v-on:click='imgIdx = (imgIdx-1)%room.imgs.length')
+              i.fas.fa-angle-right(v-on:click='imgIdx = (imgIdx+1)%room.imgs.length')
+            .room__imgs__content(v-bind:style='{left: imgIdx*-100 + "%"}')
+              .room__imgs__img(
+                v-for='img in room.imgs'
+                v-bind:style='{ backgroundImage: `url(${img})` }'
+              )
+        .room__row
+          .room__info.room__info--name {{ room.title }} 
+        .room__row
+          .room__info.room__info--duration {{ room.duration }} 
+        .room__row
+          .room__info.room__info--vacancy(v-if='room.vacancy')
+            span {{ room.vacancy }} 
+            i.fas.fa-user
+          .room__info.room__info--icons
+            i.fas.fa-male(v-if='room.gender.male')
+            i.fas.fa-female(v-if='room.gender.female')
+            i.fas.fa-utensils(v-if='room.food')
+
+    script(src="js/v_room.js")
+    script(src="js/main.js")
