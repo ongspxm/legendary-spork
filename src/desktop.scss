@@ -1,0 +1,24 @@
+@mixin center{
+    display:flex;
+    justify-content:center;
+}
+
+body{
+    @include center;
+}
+
+#rooms{
+    width:100%;
+    max-width:60rem;
+
+    display:flex;
+}
+
+.room{
+    width:20rem;
+    margin:2rem .5rem;
+
+    &__imgs{
+        border-radius:.25rem;
+    }
+}

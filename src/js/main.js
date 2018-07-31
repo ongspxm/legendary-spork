@@ -1,6 +1,7 @@
 const app = new Vue({
   el: '#app',
   data: {
+    search: '',
     rooms: [{
       id: 1,
       title: 'room 1',
