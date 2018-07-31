@@ -1,14 +1,21 @@
+"""main server script for starting the web application"""
+
 import json
 import bottle
-from util import *
+from util import EXCEPTION_MALFORMED, EXCEPTION_UNAUTHORIZED
 
 import tkn
-import user
 import room
+import users
+import dbase
 
 ### bottle wrappers & util funcs
-def handleError(callback):
+def handle_error(callback):
+    """function to return cors headers"""
+
     def wrapper(*args, **kwargs):
+        """wrapper func"""
+
         bottle.response.set_header("Access-Control-Allow-Origin", "*")
         bottle.response.set_header("Access-Control-Allow-Methods", "*")
         bottle.response.set_header("Server", "httpd 2.4.33")
@@ -19,79 +26,97 @@ def handleError(callback):
             if body is True:
                 return "ok"
             return json.dumps(body)
-        except Exception as e:
+        except Exception as exception:
             bottle.response.status = 404
-            return e
+            return exception
 
     return wrapper
-bottle.install(handleError)
+bottle.install(handle_error)
 
-def getReq(key):
-    return bottle.request.query.get(key)
+def get_req(key):
+    """util function to get val from request"""
 
-def verifyUser():
-    # expired in 3 hours
-    expired = 1000*60*60*3
-    jwtTkn = bottle.request.headers.get("Authorization")
-    if not jwtTkn: return None
+    return dict(bottle.request.query).get(key)
 
-    usr = tkn.extTkn(jwtTkn)
+def verify_user():
+    """util func to verify that user is authenticated"""
+
+    jwt_tkn = dict(bottle.request.headers).get("Authorization")
+    if not jwt_tkn:
+        return None
+
+    usr = tkn.extTkn(jwt_tkn)
     return usr
 
 @bottle.route("/login", method=["OPTIONS", "GET"])
-def user_logIn():
-    return user.genCode({
-        "email": getReq("email")
+def user_log_in():
+    """send login verification code to user"""
+
+    return users.gen_code({
+        "email": get_req("email")
     })
 
 @bottle.route("/tkn", method=["OPTIONS", "GET"])
 def user_verify():
-    email = getReq("email")
-    code = getReq("code")
-    if not email or not code: raise MalformedException
+    """return token to authenticated user"""
 
-    valid = user.vrfCode({
+    email = get_req("email")
+    code = get_req("code")
+    if not email or not code:
+        raise EXCEPTION_MALFORMED
+
+    valid = users.vrf_code({
         "email": email,
         "code": code
     })
 
-    if not valid: raise UnauthorizedException
+    if not valid:
+        raise EXCEPTION_UNAUTHORIZED
     return tkn.genTkn(email)
 
 @bottle.route("/user/name", method=["OPTIONS", "GET"])
-def user_updateName():
-    name = getReq("name")
-    if not name: raise MalformedException
+def user_update_name():
+    """signed in user can update their name"""
 
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
+    name = get_req("name")
+    if not name:
+        raise EXCEPTION_MALFORMED
 
-    return user.chgName({
+    usr = verify_user()
+    if not usr:
+        raise EXCEPTION_UNAUTHORIZED
+
+    return users.chg_name({
         "email": usr.get("email"),
         "name": name
     })
 
 @bottle.route("/rooms", methods=["OPTIONS", "GET"])
 def room_list():
-    email = getReq("email")
-    pager = getReq("pager")
+    """anyone can list rooms for viewing"""
 
-    return room.getRooms({
+    email = get_req("email")
+    pager = get_req("pager")
+
+    return room.get_rooms({
         "email": email,
         "pager": pager
     })
 
 @bottle.route("/room/new", method=["OPTIONS", "GET"])
 def room_new():
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
+    """signed in user can create new room"""
 
-    name = getReq("name")
-    vacy = getReq("vacancy")
-    aval = getReq("weekRange")
+    usr = verify_user()
+    if not usr:
+        raise EXCEPTION_UNAUTHORIZED
 
-    return room.newRoom({
-        "user": usr,
+    name = get_req("name")
+    vacy = get_req("vacancy")
+    aval = get_req("weekRange")
+
+    return room.new_room({
+        "users": usr,
         "name": name,
         "vacy": vacy,
         "aval": aval
@@ -99,85 +124,102 @@ def room_new():
 
 @bottle.route("/room/edit", method=["OPTIONS", "GET"])
 def room_edit():
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
+    """authenticated user can edit details of room"""
 
-    rmId = getReq("rm")
-    name = getReq("name")
-    vacy = getReq("vacancy")
-    aval = getReq("weekRange")
-    if not rmId: raise MalformedException
+    usr = verify_user()
+    if not usr:
+        raise EXCEPTION_UNAUTHORIZED
+
+    r_id = get_req("rm")
+    name = get_req("name")
+    vacy = get_req("vacancy")
+    aval = get_req("weekRange")
+    if not r_id:
+        raise EXCEPTION_MALFORMED
 
     qry = "where _id=? and u_email=?"
-    res = dbase.select("rooms", qry, [rmId, usr["email"]])
-    if len(res)==0: raise UnauthorizedException
+    res = dbase.select("rooms", qry, [r_id, usr["email"]])
+    if not res:
+        raise EXCEPTION_UNAUTHORIZED
 
-    return room.updateRoom({
-        "rmId": rmId,
+    return room.update_room({
+        "rmId": r_id,
         "name": name,
         "vacy": vacy,
         "aval": aval
     })
 
 @bottle.route("/room/newImg", method=["OPTIONS", "POST"])
-def room_newImg():
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
+def room_new_img():
+    """authenticated user can add img to room"""
 
-    rmId = getReq("rm")
-    data = bottle.request.files.get("img").file.read()
-    if not rmId or not data:
-        raise MalformedException
+    usr = verify_user()
+    if not usr:
+        raise EXCEPTION_UNAUTHORIZED
+
+    r_id = get_req("rm")
+    data = dict(bottle.request.files).get("img").file.read()
+    if not r_id or not data:
+        raise EXCEPTION_MALFORMED
 
     qry = "where _id=? and u_email=?"
-    res = dbase.select("rooms", qry, [rmId, usr["email"]])
-    if len(res)==0: raise UnauthorizedException
+    res = dbase.select("rooms", qry, [r_id, usr["email"]])
+    if not res:
+        raise EXCEPTION_UNAUTHORIZED
 
-    res = room.addImg({
-        "rmId": rmId,
+    res = room.add_img({
+        "rmId": r_id,
         "picData": data
     })
     return "%s %s"%(res["link"], res["imgur"])
 
-@bottle.route("/room/delImg", method=["OPTIONS", "GET"])
-def room_delImg():
-    usr = verifyUser()
-    if not usr: raise UnauthorizedException
+@bottle.route("/room/del_img", method=["OPTIONS", "GET"])
+def room_del_img():
+    """authenticated user can remove image from room"""
 
-    rmId = getReq("rm")
-    imgId = getReq("imgId")
-    if not rmId or not imgId:
-        raise MalformedException
+    usr = verify_user()
+    if not usr:
+        raise EXCEPTION_UNAUTHORIZED
+
+    r_id = get_req("rm")
+    img_id = get_req("imgId")
+    if not r_id or not img_id:
+        raise EXCEPTION_MALFORMED
 
     qry = "where _id=? and u_email=?"
-    res = dbase.select("rooms", qry, [rmId, usr["email"]])
-    if len(res)==0: raise UnauthorizedException
+    res = dbase.select("rooms", qry, [r_id, usr["email"]])
+    if not res:
+        raise EXCEPTION_UNAUTHORIZED
 
-    return room.delImg({
-        "rmId": rmId,
-        "imgurId": imgId
+    return room.del_img({
+        "rmId": r_id,
+        "imgurId": img_id
     })
 
-@bottle.route("/admin/newUser", method=["OPTIONS", "GET"])
-def admin_newUser():
-    usr = verifyUser()
-    if not usr or not user.isAdmin(usr["email"]):
-        raise UnauthorizedException
+@bottle.route("/admin/new_user", method=["OPTIONS", "GET"])
+def admin_new_user():
+    """admin function to add new users"""
 
-    name = getReq("name")
-    email = getReq("email")
+    usr = verify_user()
+    if not usr or not users.is_admin(usr["email"]):
+        raise EXCEPTION_UNAUTHORIZED
 
-    return user.newUser({"email":email, "name":name})
+    name = get_req("name")
+    email = get_req("email")
+
+    return users.new_user({"email":email, "name":name})
 
 @bottle.route("/admin/listUsers", method=["OPTIONS", "GET"])
-def admin_listUsers():
-    usr = verifyUser()
-    if not usr or not user.isAdmin(usr["email"]):
-        raise UnauthorizedException
+def admin_list_users():
+    """admin function to list users"""
 
-    return map(lambda usr: {
+    usr = verify_user()
+    if not usr or not users.is_admin(usr["email"]):
+        raise EXCEPTION_UNAUTHORIZED
+
+    return [{
         "name": usr["name"],
         "email": usr["email"]
-    }, user.getUsers())
+    } for usr in users.get_users()]
 
 bottle.run(host="0.0.0.0", port=8000)

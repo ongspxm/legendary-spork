@@ -1,18 +1,27 @@
+"""wrapper for sqlite library"""
 import sqlite3
 
 DB = "data.db"
 
-def getConn():
-    return sqlite3.connect(DB);
+def get_conn():
+    """get a connection to sqlite"""
+    return sqlite3.connect(DB)
 
 ### return [rows]
-def select(table, where="", vals=[]):
-    conn = getConn()
-    db = conn.cursor()
+def select(table, where="", vals=None):
+    """select from sqlite db"""
+    conn = get_conn()
+    cur = conn.cursor()
 
-    db.execute("select * from %s %s"%(table, where), vals)
-    res = db.fetchall()
-    fld = db.description
+    if not where:
+        where = ""
+
+    if not vals:
+        vals = []
+
+    cur.execute("select * from %s %s"%(table, where), vals)
+    res = cur.fetchall()
+    fld = cur.description
     conn.close()
 
     out = []
@@ -27,38 +36,41 @@ def select(table, where="", vals=[]):
 
 ### return True
 def insert(table, obj):
-    conn = getConn()
-    db = conn.cursor()
+    """insert into sqlite db"""
+    conn = get_conn()
+    cur = conn.cursor()
 
-    fstr,vals=[],[]
+    fstr, vals = [], []
     for key in obj.keys():
         fstr.append(key)
         vals.append(obj.get(key, ""))
 
     qry = "insert into %s(%s) values(%s)"%(
-            table,
-            ",".join(fstr),
-            ",".join(["?"]*len(vals)))
+        table,
+        ",".join(fstr),
+        ",".join(["?"]*len(vals)))
 
-    db.execute(qry, vals)
+    cur.execute(qry, vals)
     conn.commit()
     conn.close()
     return True
 
 ### return True
 def delete(table, where, vals):
-    conn = getConn()
-    db = conn.cursor()
+    """delete from sqlite db"""
+    conn = get_conn()
+    cur = conn.cursor()
 
-    db.execute("delete from %s %s"%(table, where), vals)
+    cur.execute("delete from %s %s"%(table, where), vals)
     conn.commit()
     conn.close()
     return True
 
 ### return True
 def update(table, where, wvals, obj):
-    conn = getConn()
-    db = conn.cursor()
+    """update vals in sqlite db"""
+    conn = get_conn()
+    cur = conn.cursor()
 
     vals, flds = [], []
     for key in obj.keys():
@@ -66,11 +78,11 @@ def update(table, where, wvals, obj):
         vals.append(obj[key])
 
     qry = "update %s set %s %s"%(
-            table,
-            ",".join(flds),
-            where)
+        table,
+        ",".join(flds),
+        where)
 
-    db.execute(qry, vals+wvals)
+    cur.execute(qry, vals+wvals)
     conn.commit()
     conn.close()
     return True

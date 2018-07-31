@@ -1,3 +1,5 @@
+"""wrapper for mailgun"""
+
 import os
 import requests
 
@@ -8,9 +10,10 @@ MAILGUN_URL = "https://api.mailgun.net/v3/%s/messages"%(MAILGUN_DOM)
 
 ### ({text, subj, from, to})
 def sendmail(msg):
+    """send email using mailgun"""
     return requests.post(
         MAILGUN_URL, auth=("api", MAILGUN_API),
-        data = {
+        data={
             "to": [msg["to"]],
             "text": msg["text"],
             "from": MAILGUN_EML,
