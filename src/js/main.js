@@ -1,6 +1,7 @@
 const app = new Vue({
   el: '#app',
   data: {
+    showFilter: true,
     search: '',
     rooms: [{
       id: 1,

@@ -1,3 +1,5 @@
+@import "./colors";
+
 body{
     margin:0;
     padding:0;
@@ -9,9 +11,8 @@ vuetemplate{
 }
 
 .nav{
-    padding:.5rem 1rem;
-
     &__main{
+        padding:.5rem 1rem;
         display:flex;
         align-items:center;
 
@@ -23,6 +24,70 @@ vuetemplate{
         .search{
             flex:1 0;
             margin-left:.5rem;
+        }
+    }
+
+    &__filter{
+        width:100%;
+        height:100%;
+
+        top:100%;
+        position:fixed;
+        transition:top .75s;
+
+        background:mui-color('white');
+        z-index:1000;
+
+        display:flex;
+        flex-flow:column;
+
+        &--show{
+            top:0;
+        }
+
+        &__option{
+            display:flex;
+            flex-flow:column;
+
+            padding:.5rem 1rem;
+        }
+
+        .close{
+            padding:.5rem 1rem;
+            cursor:pointer;
+
+            color:mui-color('grey');
+            font-size:1.5rem;
+        }
+
+        select, button, input{
+            cursor:pointer;
+            border-radius:.25rem;
+        }
+
+        select, input{
+            margin:.5rem 0;
+            padding:.5rem 1rem;
+            background:#fff;
+
+            appearance: none;
+            border:.1rem solid mui-color('grey');
+        }
+
+        label{
+            font-size:.75rem;
+            font-weight:bold;
+            text-transform:uppercase;
+        }
+
+        button{
+            padding:.75rem 0;
+
+            font-size:1.25rem;
+            font-weight:bold;
+
+            color:#fff;
+            background:mui-color('lime', '800');
         }
     }
 }

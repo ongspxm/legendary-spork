@@ -3,6 +3,7 @@ html
     script(src="js/vue.min.js")
 
     link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css")
+
     link(rel="stylesheet", href="style.css", media="screen")
     link(rel="stylesheet", href="desktop.css", media="screen and (min-width:40rem)")
   body
@@ -10,7 +11,29 @@ html
       .nav
         .nav__main
           img.logo(src='http://placekitten.com/300/200')
-          input.search(v-model="search", placeHolder="search")
+          input.search(v-on:click='showFilter=true')
+        .nav__filter(v-bind:class='{"nav__filter--show":showFilter}')
+          .nav__filter__option
+            i.fas.fa-times.close(v-on:click='showFilter=false;')
+          .nav__filter__option
+            label search
+            input(type='text', placeHolder='search')
+          .nav__filter__option
+            label Gender
+            select
+              option(disabled, selected, value) -NIL- 
+              option male
+              option female
+              option both
+          .nav__filter__option
+            label Meal Porvided
+            select
+              option(disabled, selected, value) -NIL- 
+              option meals provided
+              option no meals 
+          .nav__filter__option
+            button Search 
+        
       #list
         #rooms
           v_room(
