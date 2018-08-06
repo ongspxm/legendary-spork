@@ -13,34 +13,33 @@ html
           img.logo(src='http://placekitten.com/300/200')
           input.search(v-on:click='showFilter=true')
         .nav__filter(v-bind:class='{"nav__filter--show":showFilter}')
-          .nav__filter__option.nav__filter__option--close(v-on:click='showFilter=false;')
+          .nav__filter__option.nav__filter__option--close.mobile(v-on:click='showFilter=false')
             i.fas.fa-times
-          .nav__filter__option
+          .nav__filter__option.mobile
             label search
             input(type='text', placeHolder='search')
           .nav__filter__option
             label Gender
-            select
-              option(disabled, selected, value) -NIL- 
-              option male
-              option female
-              option both
+            select(v-model='filter.gender', v-bind:class='{ blank:filter.gender==="" }')
+              option(selected, value='') Gender?
+              option(value='0') male
+              option(value='1') female
+              option(value='2') both
           .nav__filter__option
-            label Meal Porvided
-            select
-              option(disabled, selected, value) -NIL- 
-              option meals provided
-              option no meals 
-          .nav__filter__option
-            button Search 
+            label Meal Provided
+            select(v-model='filter.meals', v-bind:class='{ blank:filter.meals==="" }')
+              option(selected, value='') Meals?
+              option(value='0') meals provided
+              option(value='1') no meals 
+          .nav__filter__option.mobile(v-on:click='showFilter=false')
+            button Search
         
-      #list
-        #rooms
-          v_room(
-            v-for='room in rooms', 
-            v-bind:room='room',
-            v-bind:key='room.id'
-          )
+      #rooms
+        v_room(
+          v-for='room in rooms', 
+          v-bind:room='room',
+          v-bind:key='room.id'
+        )
 
     vuetemplate#v_room
       .room
