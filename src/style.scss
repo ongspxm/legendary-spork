@@ -49,15 +49,15 @@ vuetemplate{
             display:flex;
             flex-flow:column;
 
-            padding:.5rem 1rem;
-        }
+            margin:.5rem 1rem;
 
-        .close{
-            padding:.5rem 1rem;
-            cursor:pointer;
+            &--close{
+                padding:.5rem 1rem;
+                cursor:pointer;
 
-            color:mui-color('grey');
-            font-size:1.5rem;
+                color:mui-color('grey');
+                font-size:1.5rem;
+            }
         }
 
         select, button, input{

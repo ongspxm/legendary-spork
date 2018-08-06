@@ -13,8 +13,8 @@ html
           img.logo(src='http://placekitten.com/300/200')
           input.search(v-on:click='showFilter=true')
         .nav__filter(v-bind:class='{"nav__filter--show":showFilter}')
-          .nav__filter__option
-            i.fas.fa-times.close(v-on:click='showFilter=false;')
+          .nav__filter__option.nav__filter__option--close(v-on:click='showFilter=false;')
+            i.fas.fa-times
           .nav__filter__option
             label search
             input(type='text', placeHolder='search')
