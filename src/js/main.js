@@ -1,6 +1,11 @@
 const app = new Vue({
   el: '#app',
   data: {
+    showFilter: false,
+    filter:{
+      gender:'',
+      meals:'',
+    },
     rooms: [{
       id: 1,
       title: 'room 1',

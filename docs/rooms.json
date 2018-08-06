@@ -1,0 +1,44 @@
+[
+    {
+        "name": "room1",
+        "avail": 4,
+        "range": 52,
+        "imgs": [
+            "https://i.imgur.com/OzTNOI9.jpg"
+        ],
+        "rid": 1,
+        "email": "ongspxm@gmail.com"
+    },
+    {
+        "name": "room2",
+        "avail": 4,
+        "range": 12,
+        "imgs": [],
+        "rid": 2,
+        "email": "ongspxm@gmail.com"
+    },
+    {
+        "name": "room2",
+        "avail": 4,
+        "range": 11,
+        "imgs": [],
+        "rid": 3,
+        "email": "ongspxm@gmail.com"
+    },
+    {
+        "name": "room2",
+        "avail": 4,
+        "range": 12,
+        "imgs": [],
+        "rid": 4,
+        "email": "ongspxm@gmail.com"
+    },
+    {
+        "name": "room2",
+        "avail": 4,
+        "range": 12,
+        "imgs": [],
+        "rid": 5,
+        "email": "ongspxm@gmail.com"
+    }
+]

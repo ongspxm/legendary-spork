@@ -3,9 +3,37 @@ html
     script(src="js/vue.min.js")
 
     link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css")
-    link(rel="stylesheet", href="style.css")
+
+    link(rel="stylesheet", href="style.css", media="screen")
+    link(rel="stylesheet", href="desktop.css", media="screen and (min-width:40rem)")
   body
     #app
+      .nav
+        .nav__main
+          img.logo(src='http://placekitten.com/300/200')
+          input.search(v-on:click='showFilter=true')
+        .nav__filter(v-bind:class='{"nav__filter--show":showFilter}')
+          .nav__filter__option.nav__filter__option--close.mobile(v-on:click='showFilter=false')
+            i.fas.fa-times
+          .nav__filter__option.mobile
+            label search
+            input(type='text', placeHolder='search')
+          .nav__filter__option
+            label Gender
+            select(v-model='filter.gender', v-bind:class='{ blank:filter.gender==="" }')
+              option(selected, value='') Gender?
+              option(value='0') male
+              option(value='1') female
+              option(value='2') both
+          .nav__filter__option
+            label Meal Provided
+            select(v-model='filter.meals', v-bind:class='{ blank:filter.meals==="" }')
+              option(selected, value='') Meals?
+              option(value='0') meals provided
+              option(value='1') no meals 
+          .nav__filter__option.mobile(v-on:click='showFilter=false')
+            button Search
+        
       #rooms
         v_room(
           v-for='room in rooms', 
@@ -18,8 +46,8 @@ html
         .room__row
           .room__imgs
             .room__imgs__ctrls
-              i.fas.fa-angle-left(v-on:click='imgIdx = (imgIdx-1)%room.imgs.length')
-              i.fas.fa-angle-right(v-on:click='imgIdx = (imgIdx+1)%room.imgs.length')
+              i.fas.fa-angle-left(v-on:click='imgIdx = (imgIdx-1+room.imgs.length)%room.imgs.length')
+              i.fas.fa-angle-right(v-on:click='imgIdx = (imgIdx+1+room.imgs.length)%room.imgs.length')
             .room__imgs__content(v-bind:style='{left: imgIdx*-100 + "%"}')
               .room__imgs__img(
                 v-for='img in room.imgs'
@@ -33,6 +61,7 @@ html
           .room__info.room__info--vacancy(v-if='room.vacancy')
             span {{ room.vacancy }} 
             i.fas.fa-user
+            i.far.fa-circle.buffer
           .room__info.room__info--icons
             i.fas.fa-male(v-if='room.gender.male')
             i.fas.fa-female(v-if='room.gender.female')

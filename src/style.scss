@@ -1,3 +1,5 @@
+@import "./colors";
+
 body{
     margin:0;
     padding:0;
@@ -6,6 +8,88 @@ body{
 
 vuetemplate{
     display:none;
+}
+
+.nav{
+    &__main{
+        padding:.5rem 1rem;
+        display:flex;
+        align-items:center;
+
+        .logo{
+            width:3rem;
+            height:3rem;
+        }
+
+        .search{
+            flex:1 0;
+            margin-left:.5rem;
+        }
+    }
+
+    &__filter{
+        width:100%;
+        height:100%;
+
+        top:100%;
+        position:fixed;
+        transition:top .75s;
+
+        background:mui-color('white');
+        z-index:1000;
+
+        display:flex;
+        flex-flow:column;
+
+        &--show{
+            top:0;
+        }
+
+        &__option{
+            display:flex;
+            flex-flow:column;
+
+            margin:.5rem 1rem;
+
+            &--close{
+                padding:.5rem 1rem;
+                cursor:pointer;
+
+                color:mui-color('grey');
+                font-size:1.5rem;
+            }
+        }
+
+        select, button, input{
+            cursor:pointer;
+            border-radius:.25rem;
+        }
+
+        select, input{
+            margin:.5rem 0;
+            padding:.5rem 1rem;
+            background:#fff;
+
+            appearance: none;
+            border:.1rem solid mui-color('grey');
+        }
+
+        label{
+            font-size:.75rem;
+            font-weight:bold;
+            text-transform:uppercase;
+        }
+
+        button{
+            padding:.75rem 0;
+
+            font-size:1.25rem;
+            font-weight:bold;
+
+            color:#fff;
+            background:mui-color('lime', '800');
+        }
+    }
 }
 
 .room{
@@ -23,52 +107,70 @@ vuetemplate{
         margin-bottom:1rem;
 
         &__ctrls{
-            top:calc(50% - 1rem);
             position:absolute;
+            cursor:pointer;
             z-index:100;
 
+            width:100%;
+            height:100%;
+            opacity:0;
+
+            color:#fff;
             font-size:2rem;
-            cursor:pointer;
-            width:calc(100% - 2rem);
 
             display:flex;
-            padding:1rem;
             justify-content:space-between;
+            align-items:center;
+
+            &:hover{
+                opacity:1;
+                background-image:linear-gradient(to right, #0006, #0000, #0006);
+            }
+
+            i{
+                padding:1rem;
+            }
         }
 
         &__content{
             display:flex;
             position:relative;
             z-index:10;
-            transition:left 1s;
+            transition:left .5s;
         }
 
         &__img{
             flex:0 0 100%;
             width:100%;
-            padding-bottom:75%;
+            padding-bottom:66%;
             background-size:cover;
         }
     }
 
     &__info{
         padding-left:1rem;
+        font-size:.75rem;
 
         &--name{
-            font-size:1.5rem;
+            font-size:1rem;
             font-weight:bold;
         }
 
         &--duration{
-            margin-bottom:0.5rem;
+            font-size:1rem;
+            margin-bottom:.5rem;
         }
 
         &--icons{
-            font-size:1.5rem;
-
             i{
+                font-size:1rem;
                 margin-right:1rem;
             }
+        }
+
+        .buffer{
+            font-size:.5rem;
+            margin-left:1rem;
         }
     }
 }

@@ -1,0 +1,57 @@
+@import "./colors";
+
+.mobile{
+    display:none !important;
+}
+
+.nav{
+    &__main{
+        padding:1rem 2rem;
+    }
+
+    &__filter{
+        height:auto;
+        position:static;
+
+        padding:.5rem 5rem;
+        border:1px solid mui-color('grey', '300');
+
+        display:flex;
+        flex-flow:row;
+
+        &__option{
+            margin:0 .5rem;
+
+            select{
+                padding:.5rem;
+                color:mui-color('white');
+                background:mui-color('lime', '900');
+
+                &.blank{
+                    color:mui-color('black');
+                    background:mui-color('white');
+                }
+            }
+
+            label{
+                display:none;
+            }
+        }
+    }
+}
+
+#rooms{
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+}
+
+.room{
+    width:20rem;
+    margin:2rem .5rem;
+
+    &__imgs{
+        border-radius:.25rem;
+    }
+}
